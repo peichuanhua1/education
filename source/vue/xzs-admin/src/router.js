@@ -139,6 +139,30 @@ const constantRoutes = [
     ]
   },
   {
+    path: '/course',
+    component: Layout,
+    name: 'CoursePage',
+    meta: {
+      title: '课程学习',
+      icon: 'education'
+    },
+    alwaysShow: true,
+    children: [
+      {
+        path: 'list',
+        component: () => import('@/views/course/list'),
+        name: 'CourseListPage',
+        meta: { title: '课程列表', noCache: true }
+      },
+      {
+        path: 'edit',
+        component: () => import('@/views/course/edit'),
+        name: 'CourseEditPage',
+        meta: { title: '课程创建', noCache: true }
+      }
+    ]
+  },
+  {
     path: '/task',
     component: Layout,
     name: 'TaskPage',
