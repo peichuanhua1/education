@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mindskip.xzs.repository.VideoMapper">
+  <resultMap id="BaseResultMap" type="com.mindskip.xzs.domain.Video">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="title" jdbcType="VARCHAR" property="title" />
+    <result column="subject_id" jdbcType="INTEGER" property="subjectId" />
+    <result column="level" jdbcType="INTEGER" property="level" />
+    <result column="url" jdbcType="VARCHAR" property="url" />
+    <result column="pic_url" jdbcType="VARCHAR" property="picUrl" />
+    <result column="deleted" jdbcType="BIT" property="deleted" />
+    <result column="remark" jdbcType="VARCHAR" property="remark" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, title, subject_id, url, pic_url, deleted, remark, level
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from t_video
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from t_video
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insertVideo" parameterType="com.mindskip.xzs.domain.Video" useGeneratedKeys="true" keyProperty="id">
+    insert into t_video (id, title, subject_id,
+      url,pic_url, remark, level
+      )
+    values (#{id,jdbcType=INTEGER}, #{title,jdbcType=VARCHAR}, #{subjectId,jdbcType=INTEGER},
+      #{url,jdbcType=VARCHAR}, #{picUrl,jdbcType=VARCHAR}, #{remark,jdbcType=VARCHAR},#{level,jdbcType=INTEGER}
+      )
+  </insert>
+  <update id="updateVideo" parameterType="com.mindskip.xzs.domain.Video">
+    update t_video
+    <set>
+      <if test="title != null">
+        title = #{title,jdbcType=VARCHAR},
+      </if>
+      <if test="subjectId != null">
+        subject_id = #{subjectId,jdbcType=INTEGER},
+      </if>
+      <if test="level != null">
+        level = #{level,jdbcType=INTEGER},
+      </if>
+<!--      <if test="url != null">-->
+<!--        url = #{url,jdbcType=VARCHAR},-->
+<!--      </if>-->
+<!--      <if test="picUrl != null">-->
+<!--        pic_url = #{picUrl,jdbcType=VARCHAR},-->
+<!--      </if>-->
+      <if test="remark != null">
+        remark = #{remark,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.mindskip.xzs.domain.Video">
+    update t_video
+    set title = #{title,jdbcType=VARCHAR},
+        subject_id = #{subjectId,jdbcType=INTEGER},
+        remark = #{remark,jdbcType=INTEGER},
+      url = #{url,jdbcType=VARCHAR},
+        level = #{level,jdbcType=INTEGER},
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+
+
+
+  <select id="getAllVideo" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List"/>
+    from t_video where deleted=0
+  </select>
+
+  <select id="getVideoById" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List"/>
+    from t_video
+    where id=#{value}
+  </select>
+
+  <select id="videoPageList" resultMap="BaseResultMap">
+    SELECT
+    <include refid="Base_Column_List"/>
+    FROM t_video
+    <where>
+        and deleted=0
+      <if test="title != null and title != ''">
+        and  title like concat('%',#{title},'%')
+      </if>
+    </where>
+    ORDER BY id
+    <if test="offset != null and limit != null ">
+      <bind name="patternAdd" value="limit*offset"/>
+      limit #{limit} OFFSET #{offset}
+    </if>
+  </select>
+
+
+  <select id="videoPageCount" resultType="java.lang.Integer">
+    select count(*) from t_video
+    <where>
+        and deleted=0
+      <if test="title != null and title != ''">
+        and title like concat('%', #{title}, '%')
+      </if>
+    </where>
+  </select>
+
+  <select id="videoPage" resultMap="BaseResultMap" parameterType="com.mindskip.xzs.viewmodel.admin.video.VideoPageRequestVM">
+    SELECT
+    <include refid="Base_Column_List"/>
+    FROM t_video
+    <where>
+      and deleted=0
+      <if test="title != null and title != ''">
+        and title like concat('%',#{title},'%')
+      </if>
+      <if test="subjectId != null">
+        and subject_id = #{subjectId}
+      </if>
+      <if test="level != null">
+        and level = #{level}
+      </if>
+    </where>
+  </select>
+
+  <update id="deleteVideoById">
+    update t_video
+    set deleted = 1
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+
+</mapper>

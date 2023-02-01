@@ -58,7 +58,15 @@ spring:
     hikari:
       idle-timeout: 600000  #10 min
       max-lifetime: 1800000 #30 min
-
+  servlet:
+    multipart:
+      # 文件最大限制
+      max-file-size: 512MB
+      # 请求最大限制
+      max-request-size: 512MB
+      enabled: true
+      # 设置文件缓存的临界点,超过则先保存到临时目录,默认为0,所有文件都会进行缓存
+      file-size-threshold: 0
 
   #runningtime environment
   profiles:
