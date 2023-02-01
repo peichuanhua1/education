@@ -7,12 +7,11 @@
 				</el-row>
 				<el-table v-loading="listLoading" :data="tableData" fit highlight-current-row style="width: 100%">
 					<el-table-column prop="id" label="序号" width="90px" />
-					<el-table-column prop="name" label="名称" />
+					<el-table-column prop="title" label="名称" />
+					<el-table-column prop="remark" label="描述" />
 					<el-table-column align="right">
 						<template slot-scope="{row}">
-							<router-link target="_blank" :to="{ path: '/do', query: { id: row.id } }">
-								<el-button type="text" size="small">立即学习</el-button>
-							</router-link>
+							<el-button type="text" size="small" @click="handleLearn(row)">立即学习</el-button>
 						</template>
 					</el-table-column>
 				</el-table>
@@ -21,13 +20,20 @@
 			</el-tab-pane>
 		</el-tabs>
 
+		<el-dialog :visible.sync="dialogTableVisible" @closed="handleDiagClose()" :close-on-press-escape="false"
+			:close-on-click-modal="false">
+			<div style="height: 500px">
+				<vue-core-video-player ref="videoPlayer" :src="videoSource" :cover="cover" :title="title" :loop="false" />
+			</div>
+		</el-dialog>
+
 	</div>
 </template>
 
 <script>
 import { mapState } from 'vuex'
 import Pagination from '@/components/Pagination'
-import examPaperApi from '@/api/examPaper'
+import examPaperApi from '@/api/course'
 import subjectApi from '@/api/subject'
 
 export default {
@@ -44,7 +50,12 @@ export default {
 			listLoading: true,
 			subjectList: [],
 			tableData: [],
-			total: 0
+			total: 0,
+			picBase: 'http://pch-photo.oss-cn-shanghai.aliyuncs.com/education',
+			dialogTableVisible: false,
+			videoSource: [],
+			cover: null,
+			title: null,
 		}
 	},
 	created() {
@@ -77,6 +88,17 @@ export default {
 		subjectChange(tab, event) {
 			this.queryParam.subjectId = Number(this.tabId)
 			this.search()
+		},
+		handleLearn(row) {
+			console.log('handleLearn===', row)
+			this.dialogTableVisible = true
+			this.cover = `${this.picBase}${row.picUrl}`
+			this.videoSource = [{ src: `${this.picBase}${row.url}` }]
+			this.title = row.title
+		},
+		handleDiagClose() {
+			console.log('handleDiagClose', this.$refs.videoPlayer)
+			this.$refs.videoPlayer.pause()
 		}
 	},
 	computed: {

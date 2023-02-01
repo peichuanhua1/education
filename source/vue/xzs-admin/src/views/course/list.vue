@@ -13,7 +13,7 @@
 				</el-select>
 			</el-form-item>
 			<el-form-item label="名称：">
-				<el-input v-model="queryParam.id" clearable></el-input>
+				<el-input v-model="queryParam.title" clearable></el-input>
 			</el-form-item>
 			<el-form-item>
 				<el-button type="primary" @click="submitForm">查询</el-button>
@@ -21,13 +21,19 @@
 		</el-form>
 		<el-table v-loading="listLoading" :data="tableData" border fit highlight-current-row style="width: 100%">
 			<el-table-column prop="id" label="Id" width="90px" />
-			<el-table-column prop="subjectId" label="封面" :formatter="subjectFormatter" width="120px" />
-			<el-table-column prop="name" label="课程名称" />
-			<el-table-column prop="createTime" label="分类" />
-			<el-table-column prop="createTime" label="年级" />
+			<el-table-column prop="subjectId" label="封面" width="160px">
+				<template slot-scope="{row}">
+					<el-image style="width: 100px; height: 100px" :src="picBase + row.picUrl"
+						:preview-src-list="[picBase + row.picUrl]">
+					</el-image>
+				</template>
+			</el-table-column>
+			<el-table-column prop="title" label="课程名称" />
+			<el-table-column prop="subjectId" :formatter="subjectFormatter" label="分类" />
+			<el-table-column prop="remark" label="描述" />
 			<el-table-column label="操作" align="center" width="160px">
 				<template slot-scope="{row}">
-					<!-- <el-button size="mini" @click="$router.push({path:'/exam/paper/edit',query:{id:row.id}})" >编辑</el-button> -->
+					<!-- <el-button size="mini" @click="$router.push({ path: '/exam/paper/edit', query: { data: row } })">编辑</el-button> -->
 					<el-button size="mini" type="danger" @click="deletePaper(row)" class="link-left">删除</el-button>
 				</template>
 			</el-table-column>
@@ -40,14 +46,15 @@
 <script>
 import { mapGetters, mapState, mapActions } from 'vuex'
 import Pagination from '@/components/Pagination'
-import examPaperApi from '@/api/examPaper'
+import examPaperApi from '@/api/course'
 
 export default {
 	components: { Pagination },
 	data() {
 		return {
+			picBase: 'http://pch-photo.oss-cn-shanghai.aliyuncs.com/education',
 			queryParam: {
-				id: null,
+				title: null,
 				level: null,
 				subjectId: null,
 				pageIndex: 1,
@@ -80,7 +87,7 @@ export default {
 		},
 		deletePaper(row) {
 			let _this = this
-			examPaperApi.deletePaper(row.id).then(re => {
+			examPaperApi.deleteCourse(row.id).then(re => {
 				if (re.code === 1) {
 					_this.search()
 					_this.$message.success(re.message)

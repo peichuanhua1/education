@@ -44,6 +44,7 @@
     "nprogress": "0.2.0",
     "screenfull": "^5.2.0",
     "vue": "^2.7.14",
+    "vue-core-video-player": "^0.2.0",
     "vue-router": "^3.6.5",
     "vuex": "^3.6.2"
   },
